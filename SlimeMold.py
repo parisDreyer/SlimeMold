@@ -174,7 +174,7 @@ class SlimeMold(object):
         # environment evaluates each cell for fitness
         # sort cells by `environment.fitnessScore(cell: self.cells[index])`` and then remove the bottom `populationDeclineRate` percentile
         cellsByFitnessScore = [(environment.fitnessScore(cell), cell) for cell in self.cells]
-        #  cells sorted by fitness greatest to least
+        #  cells sorted by least erro to greatest error
         cellsByFitnessScore.sort(key=lambda tupl: tupl[0])
         numberOfCellsThatWillDie = int(len(cellsByFitnessScore) * populationDeclineRate)
         tokenCellDeath = range(0, numberOfCellsThatWillDie)
@@ -234,7 +234,8 @@ class Environment(ExternalFactors):
     def fitnessScore(self, cell: Cell) -> float:
         # evaluate cell
         producedInfluence = cell.produce(self.influences)
-        percentageError = 1 / self.differenceFromTargetOutput(producedInfluence)
+        delta = self.differenceFromTargetOutput(producedInfluence)
+        percentageError = 1 / delta if delta != 0 else 1
         return 1 - percentageError
 
     def differenceFromTargetOutput(self, influence: Influence) -> float:
